@@ -5,8 +5,10 @@ import atexit
 
 BROADCAST_PORT = 50001
 BROADCAST_INTERVAL = 5  # seconds
+PEER_EXPIRY = 15  # seconds
 
-peers = set()
+peers = {}  # {ip: last_seen_time}
+peers_lock = threading.Lock()
 broadcast_socket = None
 listen_socket = None
 
@@ -42,19 +44,31 @@ def listen_for_peers():
             try:
                 data, addr = listen_socket.recvfrom(1024)
                 if data == b'P2P_PEER':
-                    peers.add(addr[0])
+                    with peers_lock:
+                        peers[addr[0]] = time.time()
             except Exception as e:
                 print(f"Listen error: {e}")
                 break
     except Exception as e:
         print(f"Socket bind error: {e}")
 
+def expire_peers():
+    while True:
+        now = time.time()
+        with peers_lock:
+            expired = [ip for ip, last_seen in peers.items() if now - last_seen > PEER_EXPIRY]
+            for ip in expired:
+                del peers[ip]
+        time.sleep(5)
+
 def get_peers():
-    return list(peers)
+    with peers_lock:
+        return list(peers.keys())
 
 if __name__ == "__main__":
     threading.Thread(target=broadcast_presence, daemon=True).start()
     threading.Thread(target=listen_for_peers, daemon=True).start()
+    threading.Thread(target=expire_peers, daemon=True).start()
     print("Peer discovery started. Press Ctrl+C to exit.")
     try:
         while True:
