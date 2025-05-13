@@ -4,8 +4,8 @@ import time
 import atexit
 
 BROADCAST_PORT = 50001
-BROADCAST_INTERVAL = 5  # seconds
-PEER_EXPIRY = 15  # seconds
+BROADCAST_INTERVAL = 5 
+PEER_EXPIRY = 15  
 
 peers = {}  # {ip: last_seen_time}
 peers_lock = threading.Lock()
