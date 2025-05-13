@@ -4,9 +4,9 @@ let currentSend = null;
 
 const BACKEND_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000' : `http://${window.location.hostname}:5000`;
 
-// Initialize
+
 window.onload = function () {
-    // Set up file input handlers
+
     const fileInput = document.getElementById('file-input');
     const fileInputPeer = document.getElementById('file-input-peer');
     
@@ -24,10 +24,10 @@ window.onload = function () {
         });
     }
 
-    // Initial data fetch
+
     fetchFiles();
     fetchPeers();
-    setInterval(fetchPeers, 5000);  // Refresh peer list every 5 sec
+    setInterval(fetchPeers, 5000);  
 };
 
 async function fetchFiles() {
