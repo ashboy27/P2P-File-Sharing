@@ -8,7 +8,7 @@ import hashlib
 from pathlib import Path
 
 from peer import get_peers, broadcast_presence, listen_for_peers
-import peer  # Needed to start threads
+import peer  
 
 SHARED_FOLDER = os.path.join(os.path.dirname(__file__), 'shared')
 os.makedirs(SHARED_FOLDER, exist_ok=True)
@@ -16,7 +16,7 @@ os.makedirs(SHARED_FOLDER, exist_ok=True)
 app = Flask(__name__)
 CORS(app)
 
-CHUNK_SIZE = 1024 * 1024  # 1MB chunks
+CHUNK_SIZE = 1024 * 1024  
 
 # Start peer discovery background threads
 try:
@@ -57,12 +57,12 @@ def list_files():
 
 @app.route('/files/<filename>', methods=['GET'])
 def download_file(filename):
-    """Download a file."""
+   
     return send_from_directory(SHARED_FOLDER, filename, as_attachment=True)
 
 @app.route('/files/<filename>', methods=['DELETE'])
 def delete_file(filename):
-    """Delete a file."""
+    
     try:
         file_path = os.path.join(SHARED_FOLDER, filename)
         if os.path.exists(file_path):
@@ -74,7 +74,7 @@ def delete_file(filename):
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
-    """Handle file upload with chunking support."""
+ 
     if 'file' not in request.files:
         return jsonify({"status": "error", "message": "No file part"}), 400
 
@@ -83,11 +83,11 @@ def upload_file():
         return jsonify({"status": "error", "message": "No selected file"}), 400
 
     try:
-        # Save the file
+      
         file_path = os.path.join(SHARED_FOLDER, file.filename)
         file.save(file_path)
 
-        # Calculate file hash
+       
         file_hash = calculate_file_hash(file_path)
 
         return jsonify({
@@ -105,7 +105,7 @@ def list_peers():
     peer_info = []
     for peer_ip in peers:
         try:
-            # Try to get peer status
+            
             peer_info.append({
                 "ip": peer_ip,
                 "status": "online"
